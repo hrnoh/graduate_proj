@@ -212,30 +212,6 @@ class MyDaemon(Daemon):
         for clnt in clntList:
                 clnt.join()
 
-"""
-# 클라이언트 핸들링 함수		
-def service(sock, addr, count):
-        # 도어락 이름 받기
-        rawData = sock.recv(1024)
-        logger.info("Doorlock-%s 연결 성공!" % str(rawData))
-    
-        while True:
-                rawData = sock.recv(1024)
-                if rawData == b"exit":
-                        break
-
-                logger.info("receive: %s" % str(rawData))
-
-        # 대문자 변환
-                upperStr = rawData.upper()
-
-        # 변환한 문자열 전송
-                sock.send(upperStr)
-
-        sock.close()		
-        logger.info("Doorlock-%d 연결 해제!" % count)
-"""
-
 if __name__ == "__main__":
     daemon = MyDaemon('/tmp/python-daemon.pid')
     if len(sys.argv) == 2:

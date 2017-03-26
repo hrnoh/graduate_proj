@@ -36,11 +36,9 @@ class DoorlockManager(object):
 
             self.logger.info("receive: %s" % str(rawData))
 
-            # 대문자 변환
-            upperStr = rawData.upper()
-
-            # 변환한 문자열 전송
-            sock.send(upperStr)
+            if rawData == b"test":
+                self.logger.info("Doorlock-%s 를 개방합니다." % name)
+                sock.send("open".encode("utf-8"))
 
         self.doorlock_del(sock) # 도어락 제거
         sock.close()    # 소켓 닫기
