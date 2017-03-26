@@ -4,15 +4,15 @@ import RPi.GPIO as GPIO
 import time
 
 def switch_on():
-    print("Doorlock open!")
-    GPIO.output(4, True)
-    time.sleep(0.3)
-    GPIO.output(4, False)
+	print("Doorlock open!")
+	GPIO.output(4, True)
+	time.sleep(0.3)
+	GPIO.output(4, False)
 
 def doorlock_open():
-    switch_on()
-    time.sleep(10)
-    switch_on()
+	switch_on()
+	time.sleep(5)
+	switch_on()
 
 
 if len(sys.argv) != 2:
@@ -27,7 +27,7 @@ GPIO.setup(4, GPIO.OUT)
 print("Client TCP initialize...")
 
 # 연결할 서버 주소 지정
-serverName = "127.0.0.1"
+serverName = "192.168.43.192"
 serverPort = 8888
 
 # 클라이언트 소켓 생성
@@ -55,4 +55,6 @@ while True:
 	# 데이터 수신
 	response = clientSocket.recv(1024)
 	if response == b"open":
-        doorlock_open()
+		#doorlock_open()
+		switch_on()
+GPIO.cleanup()
