@@ -1,5 +1,8 @@
--- DB name
-use graduatedb;
+-- cretae DB
+CREATE SCHEMA `doorlockDB` DEFAULT CHARACTER SET utf8 ;
+
+-- use DB
+use doorlockDB;
 
 -- admin
 create table admin (
@@ -10,60 +13,82 @@ create table admin (
     primary key(aNum)
 );
 
+-- department
+-- 부서 코드, 부서 이름
+create table department (
+	dno int(11) unsigned NOT NULL auto_increment,
+    deptName varchar(32) NOT NULL,
+    key(dno),
+    primary key(dno)
+);
+
+insert into department(deptName) values ('총무팀');
+insert into department(deptName) values ('경리부');
+insert into department(deptName) values ('경영지원팀');
+insert into department(deptName) values ('경영개선팀');
+insert into department(deptName) values ('인사과');
+insert into department(deptName) values ('인사팀');
+insert into department(deptName) values ('재경부');
+insert into department(deptName) values ('고객만족팀');
+insert into department(deptName) values ('구매부서');
+insert into department(deptName) values ('관리부서');
+insert into department(deptName) values ('기술지원팀');
+insert into department(deptName) values ('기획팀');
+insert into department(deptName) values ('전략기획팀');
+insert into department(deptName) values ('연구기획팀');
+insert into department(deptName) values ('연구개발팀');
+insert into department(deptName) values ('비서실');
+insert into department(deptName) values ('생산관리팀');
+insert into department(deptName) values ('시설관리팀');
+insert into department(deptName) values ('연구실');
+
 -- worker
--- 키, 이름, 나이, 폰, 직위, 레벨, 부서 번호, 지문
-create table worker (
-	wNum int(11) unsigned NOT NULL auto_increment,
+-- 키, 이름, 나이, 폰, 직위, 레벨, 부서 번호, 지문, 사진
+-- status : 사원의 상태 (safe : 안전, warning : 주의, danger : 위험)
+create table employee (
+	eno int(11) unsigned NOT NULL auto_increment,
 	name varchar(32) NOT NULL,
     age int(11) unsigned NOT NULL,
     phoneNum varchar(32),
     position varchar(10) NOT NULL,
-    dNum int(11) unsigned NOT NULL,
+    status varchar(10) NOT NULL DEFAULT 'safe',
+    dno int(11) unsigned NOT NULL,
     level int(11) unsigned NOT NULL,
-    fingerPrint blob NOT NULL,
-    key(wNum),	-- 인덱스 생성
-    primary key(wNum),
-    foreign key(dNum) references department(dNum)
+    -- fingerPrint blob NOT NULL,
+    -- face blob NOT NULL,
+    key(eno),	-- 인덱스 생성
+    primary key(eno),
+    foreign key(dno) references department(dno)
 );
 
--- department
--- 부서 코드, 부서 이름
-create table department (
-	dNum int(11) unsigned NOT NULL auto_increment,
-    dept_name varchar(32) NOT NULL,
-    key(dNum),
-    primary key(dNum)
-);
-
--- picture
--- 사진 코드, 사원 코드, 사진
-create table picture (
-	pNum int(11) unsigned not null auto_increment,
-    wNum int(11) unsigned not null,
-    picture blob not null,
-    primary key (pNum),
-    foreign key (wNum) references worker(wNum) on delete cascade on update cascade
-);
+insert into employee(name, age, phoneNum, position, dno, level)
+values ('노형래', 23, '010-8281-9331', '사장', 15, 3); 
+insert into employee(name, age, phoneNum, position, dno, level)
+values ('김동겸', 23, '010-0000-0000', '부장', 15, 3); 
 
 -- doorlock
 -- 도어락 번호, 상태, 위치, 레벨
 create table doorlock (
-	dNum int(11) unsigned not null auto_increment,
-    stat varchar(32) not null,
+	dno int(11) unsigned not null auto_increment,
+    mac varchar(32) not null,
     location varchar(32) not null,
     level int(11) unsigned not null,
-    key(dNum),
-    primary key(dNum)
+    key(dno),
+    primary key(dno)
 );
+
+insert into doorlock (mac, location, level) values('b4:74:9f:af:72:ed', '형래집', 1);
 
 -- log
 -- 사원 번호, 도어락 번호, 출입 시간
 create table log (
-	wNum int(11) unsigned not null,
-    dNum int(11) unsigned not null,
+	lno int(11) unsigned not null auto_increment,
+    eno int(11) unsigned not null,
+    message varchar(32) not null,
     time datetime not null,
-    foreign key(wNum) references worder(wNum),
-    foreign key(dNum) references doolock(dNum)
+    key(lno),
+    primary key(lno),
+    foreign key(eno) references employee(eno)
 );
 
 -- rule (수정 필요)
