@@ -85,11 +85,18 @@ create table log (
 	lno int(11) unsigned not null auto_increment,
     eno int(11) unsigned not null,
     message varchar(32) not null,
-    time datetime not null,
+    time datetime default now(),
     key(lno),
     primary key(lno),
     foreign key(eno) references employee(eno)
 );
+
+insert into log (eno, message, time) values (1, "INFO: Test Message1", now());
+insert into log (eno, message, time) values (1, "INFO: Test Message2", now());
+insert into log (eno, message, time) values (1, "INFO: Test Message3", now());
+insert into log (eno, message, time) values (2, "INFO: Test Message1", now());
+insert into log (eno, message, time) values (2, "INFO: Test Message2", now());
+insert into log (eno, message, time) values (2, "INFO: Test Message3", now());
 
 -- rule (수정 필요)
 create table rule (

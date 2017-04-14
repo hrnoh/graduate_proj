@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="org.kpu.doorlock.mapper.EmployeeMapper">
+	<select id="getInfoByNum" resultType="org.kpu.doorlock.domain.EmployeeVO">
+		select eno, name, age, phoneNum, position, status, level, deptName
+		from employee join department on employee.dno = department.dno where employee.eno = #{eno}
+	</select>
+	<select id="getAllEmployee" resultType="org.kpu.doorlock.domain.EmployeeVO">
+		select * from employee
+	</select>
+	<select id="getInfoByName" resultType="org.kpu.doorlock.domain.EmployeeVO">
+		select * from employee where name = #{name}
+	</select>
+</mapper>
