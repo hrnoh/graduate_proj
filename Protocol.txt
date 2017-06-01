@@ -21,6 +21,7 @@ rUInit(W, A) - 200				type : 요청 번호
 info(D) - 300					data : 요청 내용
 remoteOpen(D, W, A) - 400
 dRefresh(W, A) - 500
+rLog(W, A) - 600
 
 3. 웹 (WebController, "/web/")
 eLog, dLog, eAdd, dAdd, eDel, dDel, eList, dList
