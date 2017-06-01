@@ -1,0 +1,26 @@
+Protocol
+1. 메세지 종류 (G : GET, P : POST, R : RealTime)
+rDInit : 도어락 초기화(R)
+rUInit : 웹 초기화(R)
+info : 출입시 사원정보 요청(P)
+dLog : 도어락 로그 정보(G, P)
+eLog : 사원 로그 정보(G, P)
+dAdd : 도어락 추가(G, P)
+eAdd : 사원 추가(G, P)
+dDel : 도어락 제거(G, P)
+eDel : 사원 제거(G, P)
+eList : 사원 목록(G)
+dList : 도어락 목록(G)
+rRemoteOpen : 원격 개방(R)
+rRefresh : 도어락 상태 리스트 갱신 (서버 -> 웹) (R)
+rLog : 실시간 로그 (R)
+
+2. 실시간 (IoTHandler, "doorlock/doorlock-ws")
+dinit, info, remoteOpen, dRefresh
+
+3. 웹 (WebController, "/web/")
+eLog, dLog, eAdd, dAdd, eDel, dDel, eList, dList
+
+4. 안드로이드 (AndroidController, "/app/")
+eLog, dLog, eAdd, dAdd, eDel, dDel, eList, dList
+
