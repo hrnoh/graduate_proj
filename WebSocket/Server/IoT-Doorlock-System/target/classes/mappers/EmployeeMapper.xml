@@ -9,9 +9,12 @@
 		from employee join department on employee.dno = department.dno where employee.eno = #{eno}
 	</select>
 	<select id="getAllEmployee" resultType="org.kpu.doorlock.domain.EmployeeVO">
-		select * from employee
+		select eno, name, age, phoneNum, position, status, level, deptName
+		from employee join department on employee.dno = department.dno
 	</select>
 	<select id="getInfoByName" resultType="org.kpu.doorlock.domain.EmployeeVO">
-		select * from employee where name = #{name}
+		select eno, name, age, phoneNum, position, status, level, deptName
+		from employee join department on employee.dno = department.dno
+		where employee.name = #{name}
 	</select>
 </mapper>
