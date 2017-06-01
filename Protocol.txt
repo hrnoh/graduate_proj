@@ -15,8 +15,12 @@ rRemoteOpen : 원격 개방(R)
 rRefresh : 도어락 상태 리스트 갱신 (서버 -> 웹) (R)
 rLog : 실시간 로그 (R)
 
-2. 실시간 (IoTHandler, "doorlock/doorlock-ws")
-dinit, info, remoteOpen, dRefresh
+2. 실시간 (IoTHandler, "doorlock/doorlock-ws")	(D: doorlock쪽, W: 웹쪽, A: 어플쪽)
+rDinit(D) - 100					* message : (type, data)
+rUInit(W, A) - 200				type : 요청 번호
+info(D) - 300					data : 요청 내용
+remoteOpen(D, W, A) - 400
+dRefresh(W, A) - 500
 
 3. 웹 (WebController, "/web/")
 eLog, dLog, eAdd, dAdd, eDel, dDel, eList, dList
