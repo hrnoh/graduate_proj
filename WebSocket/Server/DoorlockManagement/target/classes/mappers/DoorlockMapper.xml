@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="org.kpu.ng.mapper.DoorlockMapper">
+	<insert id="create">
+		insert into doorlock(mac, location, level)
+		select #{mac}, #{location}, #{level} from dual
+		where not exists (select * from doorlock where mac=#{mac});
+	</insert>
+	
+	<select id="readByDno" resultType="DoorlockVO">
+		select * from doorlock
+		where dno = #{dno}
+	</select>
+	
+	<select id="readByMac" resultType="DoorlockVO">
+		select * from doorlock
+		where mac = #{mac}
+	</select>
+	
+	<!-- dno를 기준으로 수정(임시) -->
+	<update id="update">
+		update doorlock 
+		set mac = #{mac}, 
+		location = #{location}, 
+		level = #{level}
+		where dno = #{dno}
+	</update>
+	
+	<delete id="delete">
+		delete from doorlock
+		where mac = #{mac}
+	</delete>
+	
+	<select id="listAll" resultType="DoorlockVO">
+		select * from doorlock
+	</select>
+</mapper>

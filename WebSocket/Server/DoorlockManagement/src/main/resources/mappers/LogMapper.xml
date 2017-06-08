@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="org.kpu.ng.mapper.LogMapper">
+	<insert id="create">
+		insert into log (eno, dno, result)
+		values (#{eno}, #{dno}, #{result})
+	</insert>
+	
+	<select id="listByEmployee" resultType="LogVO">
+		select deptName, position, name, location, result, time
+		from log_full
+		where eno = #{eno}
+	</select>
+	
+	<select id="listByDoorlock" resultType="LogVO">
+		select deptName, position, name, location, result, time
+		from log_full
+		where mac = #{mac}
+	</select>
+	
+	<select id="listAll" resultType="LogVO">
+		select deptName, position, name, location, result, time
+		from log_full
+	</select>
+</mapper>

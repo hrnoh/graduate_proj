@@ -81,22 +81,20 @@ insert into doorlock (mac, location, level) values('b4:74:9f:af:72:ed', '형래�
 
 -- log
 -- 사원 번호, 도어락 번호, 출입 시간
+-- result는 success or fail
 create table log (
 	lno int(11) unsigned not null auto_increment,
     eno int(11) unsigned not null,
-    message varchar(32) not null,
+    dno int(11) unsigned not null,
+    result varchar(32) not null,
     time datetime default now(),
     key(lno),
     primary key(lno),
     foreign key(eno) references employee(eno)
 );
 
-insert into log (eno, message, time) values (1, "INFO: Test Message1", now());
-insert into log (eno, message, time) values (1, "INFO: Test Message2", now());
-insert into log (eno, message, time) values (1, "INFO: Test Message3", now());
-insert into log (eno, message, time) values (2, "INFO: Test Message1", now());
-insert into log (eno, message, time) values (2, "INFO: Test Message2", now());
-insert into log (eno, message, time) values (2, "INFO: Test Message3", now());
+insert into log (eno, dno, result) values (1, 1, "success");
+insert into log (eno, dno, result) values (2, 1, "success");
 
 -- rule (수정 필요)
 create table rule (
@@ -108,3 +106,15 @@ create table rule (
     is_use bool not null,	-- 룰 사용중 여부
 );
 
+-- 사원 view sql문 (view name : emp_full)
+select eno, name, age, phoneNum, position, status, level, deptName
+from employee join department on employee.dno = department.dno;
+
+        
+-- 로그 view sql문
+select * from emp_full
+join (
+	select log.eno, log.dno, mac, location, result, time from log 
+    join doorlock on log.dno = doorlock.dno
+) as doorlockLog
+on emp_full.eno = doorlockLog.eno;
