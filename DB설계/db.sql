@@ -107,14 +107,54 @@ create table rule (
 );
 
 -- 사원 view sql문 (view name : emp_full)
-select eno, name, age, phoneNum, position, status, level, deptName
-from employee join department on employee.dno = department.dno;
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `doorlockAdmin`@`%` 
+    SQL SECURITY DEFINER
+VIEW `emp_full` AS
+    SELECT 
+        `employee`.`eno` AS `eno`,
+        `employee`.`name` AS `name`,
+        `employee`.`age` AS `age`,
+        `employee`.`phoneNum` AS `phoneNum`,
+        `employee`.`position` AS `position`,
+        `employee`.`status` AS `status`,
+        `employee`.`level` AS `level`,
+        `department`.`deptName` AS `deptName`
+    FROM
+        (`employee`
+        JOIN `department` ON ((`employee`.`dno` = `department`.`dno`)))
 
         
 -- 로그 view sql문
-select * from emp_full
-join (
-	select log.eno, log.dno, mac, location, result, time from log 
-    join doorlock on log.dno = doorlock.dno
-) as doorlockLog
-on emp_full.eno = doorlockLog.eno;
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `doorlockAdmin`@`%` 
+    SQL SECURITY DEFINER
+VIEW `log_full` AS
+    SELECT 
+        `emp_full`.`eno` AS `eno`,
+        `emp_full`.`name` AS `name`,
+        `emp_full`.`age` AS `age`,
+        `emp_full`.`phoneNum` AS `phoneNum`,
+        `emp_full`.`position` AS `position`,
+        `emp_full`.`status` AS `status`,
+        `emp_full`.`level` AS `level`,
+        `emp_full`.`deptName` AS `deptName`,
+        `doorlockLog`.`dno` AS `dno`,
+        `doorlockLog`.`mac` AS `mac`,
+        `doorlockLog`.`location` AS `location`,
+        `doorlockLog`.`result` AS `result`,
+        `doorlockLog`.`time` AS `time`
+    FROM
+        (`doorlockDB`.`emp_full`
+        JOIN (SELECT 
+            `doorlockDB`.`log`.`eno` AS `eno`,
+                `doorlockDB`.`log`.`dno` AS `dno`,
+                `doorlockDB`.`doorlock`.`mac` AS `mac`,
+                `doorlockDB`.`doorlock`.`location` AS `location`,
+                `doorlockDB`.`log`.`result` AS `result`,
+                `doorlockDB`.`log`.`time` AS `time`
+        FROM
+            (`doorlockDB`.`log`
+        JOIN `doorlockDB`.`doorlock` ON ((`doorlockDB`.`log`.`dno` = `doorlockDB`.`doorlock`.`dno`)))) `doorlockLog` ON ((`emp_full`.`eno` = `doorlockLog`.`eno`)))
