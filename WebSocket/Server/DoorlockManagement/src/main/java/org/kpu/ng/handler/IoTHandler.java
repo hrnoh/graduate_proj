@@ -90,6 +90,10 @@ public class IoTHandler extends TextWebSocketHandler {
 		if(msg.getType() == 100) {
 			String mac = msg.getData();
 			dInit(session, mac);
+			logger.info("현재 도어락 리스트");
+			for(DoorlockListItem item : doorlockList) {
+				logger.info("mac : " + item.getMac() + ", webSocket : " + item.getSession().getId());
+			}
 		}
 		// 유저 초기화
 		else if(msg.getType() == 200) {

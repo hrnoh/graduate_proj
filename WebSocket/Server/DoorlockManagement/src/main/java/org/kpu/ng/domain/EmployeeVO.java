@@ -7,6 +7,7 @@ public class EmployeeVO {
 	private String PhoneNum;
 	private String position;
 	private String status;
+	private Integer level;
 	private Integer dno;
 	private String deptName;
 	
@@ -16,9 +17,6 @@ public class EmployeeVO {
 	public void setDeptName(String deptName) {
 		this.deptName = deptName;
 	}
-
-	private int level;
-	
 	public int getEno() {
 		return eno;
 	}
@@ -64,7 +62,7 @@ public class EmployeeVO {
 	public int getLevel() {
 		return level;
 	}
-	public void setLevel(int level) {
+	public void setLevel(Integer level) {
 		this.level = level;
 	}
 	

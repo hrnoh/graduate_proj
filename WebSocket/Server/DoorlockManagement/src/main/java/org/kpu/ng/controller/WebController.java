@@ -1,19 +1,41 @@
 package org.kpu.ng.controller;
 
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.kpu.ng.domain.DoorlockVO;
+import org.kpu.ng.domain.EmployeeVO;
+import org.kpu.ng.domain.LogVO;
+import org.kpu.ng.service.DoorlockService;
+import org.kpu.ng.service.EmployeeService;
+import org.kpu.ng.service.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/web/*")
 public class WebController {
+	@Inject
+	private LogService logService;
+	@Inject
+	private DoorlockService doorlockService;
+	@Inject
+	private EmployeeService employeeService;
+	
 	private static final Logger logger = LoggerFactory.getLogger(WebController.class);
 	
-	@RequestMapping(value = "/management", method = RequestMethod.GET)
-	public void management() {
-		logger.info("management ............");
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public String mainGET() {
+		logger.info("main ............");
+		
+		return "main";
 	}
 	
 	/*
@@ -41,12 +63,56 @@ public class WebController {
 	//===========================================================================
 	
 	/*
-	 * 도어락 로그 (URL : http://서버ip:8080/web/dDel) =======================
-	 * Param : mac주소
+	 * 도어락 리스트 (URL : http://서버ip:8080/web/dList) =======================
 	 * */
-	@RequestMapping(value = "/dLog", method = RequestMethod.POST)
-	public void dLogPOST(String mac) {
+	@RequestMapping(value = "/dList", method = RequestMethod.GET)
+	public @ResponseBody List<DoorlockVO> dListGET() throws Exception {
+		List<DoorlockVO> list = doorlockService.listAll();
 		
+		return list;
+	}
+	//===========================================================================
+	
+	/*
+	 * 사원 리스트 (URL : http://서버ip:8080/web/eList) =======================
+	 * */
+	@RequestMapping(value = "/eList", method = RequestMethod.GET)
+	public @ResponseBody List<EmployeeVO> eListGET() throws Exception {
+		List<EmployeeVO> list = employeeService.listAll();
+		
+		return list;
+	}
+	//===========================================================================
+	
+	/*
+	 * 도어락 로그 (URL : http://서버ip:8080/web/dLog) =======================
+	 * Param : mac
+	 * */
+	@RequestMapping(value = "/dLog", method = RequestMethod.GET)
+	public String dLogGET(@RequestParam("mac")String mac, Model model) throws Exception {
+		List<LogVO> dLogList = logService.listByDoorlock(mac);
+		DoorlockVO doorlockVO = doorlockService.readByMac(mac);
+		
+		model.addAttribute("list", dLogList);
+		model.addAttribute("doorlockVO", doorlockVO);
+		
+		return "doorlock_log";
+	}
+	//===========================================================================
+	
+	/*
+	 * 사원 로그 (URL : http://서버ip:8080/web/eLog) =======================
+	 * Param : eno
+	 * */
+	@RequestMapping(value = "/eLog", method = RequestMethod.GET)
+	public String eLogGET(@RequestParam("eno")int eno, Model model) throws Exception {
+		List<LogVO> eLogList = logService.listByEmployee(eno);
+		EmployeeVO employeeVO = employeeService.readByEno(eno);
+		
+		model.addAttribute("list", eLogList);
+		model.addAttribute("employeeVO", employeeVO);
+		
+		return "emp_log";
 	}
 	//===========================================================================
 }
