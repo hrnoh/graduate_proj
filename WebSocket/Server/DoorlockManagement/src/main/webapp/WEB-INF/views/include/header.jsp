@@ -29,6 +29,8 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <link rel="stylesheet" href="/resources/css/style.css" />
+    <script type="text/javascript"
+	src="/resources/js/iot_socket.js"></script>
   </head>
   <body>
     <div class="container">

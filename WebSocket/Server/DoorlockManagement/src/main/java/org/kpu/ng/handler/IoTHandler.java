@@ -21,6 +21,8 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 
 @Component
 public class IoTHandler extends TextWebSocketHandler {
@@ -62,6 +64,7 @@ public class IoTHandler extends TextWebSocketHandler {
 		}
 		
 		this.logger.info("remove session - " + session.getId());
+		doorlockList();
 	}
 
 	@Override
@@ -76,6 +79,7 @@ public class IoTHandler extends TextWebSocketHandler {
 	 * 1. dInit : 100 (param : mac)
 	 * 2. uInit : 200
 	 * 3. infoRequest : 300 (param : eno)
+	 * 3-1. accessResult : 350 (param : LogVO)
 	 * 4. remoteOpen : 400 (param : mac)
 	 * 5. dRefresh : 500
 	 * 6. rLog : 600
@@ -90,10 +94,6 @@ public class IoTHandler extends TextWebSocketHandler {
 		if(msg.getType() == 100) {
 			String mac = msg.getData();
 			dInit(session, mac);
-			logger.info("현재 도어락 리스트");
-			for(DoorlockListItem item : doorlockList) {
-				logger.info("mac : " + item.getMac() + ", webSocket : " + item.getSession().getId());
-			}
 		}
 		// 유저 초기화
 		else if(msg.getType() == 200) {
@@ -103,6 +103,10 @@ public class IoTHandler extends TextWebSocketHandler {
 		// 인증 요청
 		else if(msg.getType() == 300) {
 			infoResponse(session, Integer.parseInt(msg.getData()));
+		}
+		// 접근 성공 여부
+		else if(msg.getType() == 350) {
+			accessResult(msg.getData());
 		}
 		// 원격 오픈
 		else if(msg.getType() == 400) {
@@ -114,6 +118,7 @@ public class IoTHandler extends TextWebSocketHandler {
 	 *  Iot Doorlock System Method
 	 * 1. dInit : 도어락 초기화 메서드
 	 * 2. infoResponse : 사원 정보 반환
+	 * 3. accessResult : 접근 결과 로그 저장
 	 * */
 	public void dInit(WebSocketSession session, String mac) throws Exception {
 		DoorlockVO doorlockVO = doorlockService.readByMac(mac);
@@ -140,22 +145,22 @@ public class IoTHandler extends TextWebSocketHandler {
 		// 응답 전송
 		session.sendMessage(new TextMessage(msgJson));
 		
-		/* 로그 남기
-		this.logger.info(msgJson);
+		// 로그 남기기
 		this.logger.info(doorlockVO.getLocation() + " " + session.getRemoteAddress().getHostName() + " 연결 완료.");
 		sendLog("INFO: " + doorlockVO.getLocation() + " " + session.getRemoteAddress().getHostName() + " 연결 완료.");
-		*/
 		
 		// 중복 검사
-		//doorlockList();
 		for(DoorlockListItem item : doorlockList) {
 			if(item.getMac().equals(mac))
 				return;
 		}
-		doorlockList.add(new DoorlockListItem(session, mac));
+		doorlockList.add(new DoorlockListItem(session, mac, doorlockVO.getLocation()));
+		
+		// 도어락 리스트 갱신
+		doorlockList();
 	}
 	
-	public LogVO infoResponse(WebSocketSession session, int eno) throws Exception {
+	public void infoResponse(WebSocketSession session, int eno) throws Exception {
 		DoorlockListItem item = findItemBySession(session);
 		DoorlockVO doorlockVO = doorlockService.readByMac(item.getMac());
 		EmployeeVO employeeVO = employeeService.readByEno(eno);
@@ -171,7 +176,7 @@ public class IoTHandler extends TextWebSocketHandler {
 			
 			this.logger.warn(doorlockVO.getLocation() + "에 불법 카드 접근!");
 			sendLog("WARNING: " + doorlockVO.getLocation() + "에 불법 카드 접근!");
-			return null;
+			return;
 		}
 		
 		msg = new MessageDTO(300, employeeJson);
@@ -181,13 +186,15 @@ public class IoTHandler extends TextWebSocketHandler {
 		
 		this.logger.info(employeeVO.getName() + "이(가) " + doorlockVO.getLocation() + "에 접근하였습니다.");
 		sendLog("INFO: " + employeeVO.getName() + "이(가) " + doorlockVO.getLocation() + "에 접근하였습니다.");
+	}
+	
+	public void accessResult(String logJson) throws Exception {
+		Gson gson = new Gson();
+		LogVO log = gson.fromJson(logJson, LogVO.class);
 		
-		// 출입 이력 추가(AOP로 처리)
-		LogVO log = new LogVO();
-		log.setEno(employeeVO.getEno());
-		log.setDno(employeeVO.getDno());
-		log.setResult("success");
-		return log;
+		if(log != null) {
+			logService.regist(log);
+		}
 	}
 
 	/*
@@ -219,7 +226,8 @@ public class IoTHandler extends TextWebSocketHandler {
 			return;
 		}
 		
-		String doorlockListJson = new Gson().toJson(doorlockList);
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		String doorlockListJson = gson.toJson(doorlockList);
 		msg.setData(doorlockListJson);
 		jsonMsg = msg.toJson();
 
@@ -284,12 +292,22 @@ public class IoTHandler extends TextWebSocketHandler {
 // 도어락 리스트 아이템
 class DoorlockListItem {
 	WebSocketSession session;
+	@Expose
 	private String mac;
+	@Expose
+	private String location;
+	@Expose
+	private String ip;
 	
 	public DoorlockListItem() {}
-	public DoorlockListItem(WebSocketSession session, String mac) {
+	public DoorlockListItem(WebSocketSession session, String mac, String location) {
 		this.session = session;
 		this.mac = mac;
+		this.location = location;
+		
+		if(this.session != null) {
+			this.ip = session.getRemoteAddress().getHostName();
+		}
 	}
 	public WebSocketSession getSession() {
 		return session;
@@ -303,8 +321,20 @@ class DoorlockListItem {
 	public void setMac(String mac) {
 		this.mac = mac;
 	}
+	public String getLocation() {
+		return location;
+	}
+	public void setLocation(String location) {
+		this.location = location;
+	}
+	public String getIp() {
+		return ip;
+	}
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
 	@Override
 	public String toString() {
-		return "DoorlockListItem [session=" + session + ", mac=" + mac + "]";
+		return "DoorlockListItem [session=" + session + ", mac=" + mac + ", location=" + location + ", ip=" + ip + "]";
 	}
 }

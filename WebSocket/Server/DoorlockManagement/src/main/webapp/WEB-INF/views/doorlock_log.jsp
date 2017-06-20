@@ -98,7 +98,17 @@
 										<td class="col-xs-1 text-center">${log.position }</td>
 										<td class="col-xs-2 text-center">${log.name }</td>
 										<td class="col-xs-5 text-center">${log.time }</td>
-										<td class="col-xs-2 text-center">${log.result }</td>
+										
+										<td class="col-xs-2 text-center">
+										<c:choose>
+											<c:when test="${log.result == 'success' }">
+												<span style="color:green"><strong>${log.result }</strong></span>
+											</c:when>
+											<c:otherwise>
+												<span style="color:red"><strong>${log.result }</strong></span>
+											</c:otherwise>
+										</c:choose>
+										</td>
 									</tr>
 								</c:forEach>
 							</tbody>

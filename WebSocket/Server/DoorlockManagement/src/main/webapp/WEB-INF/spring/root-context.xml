@@ -35,4 +35,6 @@
 	<context:component-scan base-package="org.kpu.ng.persistence"></context:component-scan>
 	<context:component-scan base-package="org.kpu.ng.service"></context:component-scan>
 	<context:component-scan base-package="org.kpu.ng.aop"></context:component-scan>
+	
+	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
 </beans>

@@ -106,7 +106,16 @@
 									<tr class="col-xs-12">
 										<td class="col-xs-3">${log.location }</td>
 										<td class="col-xs-6 text-center">${log.time }</td>
-										<td class="col-xs-3 text-center">${log.result }</td>
+										<td class="col-xs-3 text-center">
+										<c:choose>
+											<c:when test="${log.result == 'success' }">
+												<span style="color:green"><strong>${log.result }</strong></span>
+											</c:when>
+											<c:otherwise>
+												<span style="color:red"><strong>${log.result }</strong></span>
+											</c:otherwise>
+										</c:choose>
+										</td>
 									</tr>
 								</c:forEach>
 							</tbody>

@@ -43,7 +43,7 @@ class Client:
                 body = json.loads(msg)
 
                 # 기능별 수행
-                if body['type'] == "dinit":     # doorlock open
+                if body['type'] == 100:     # doorlock open
                     data = json.loads(body['data'])
 
                     self.dno = data['dno']
@@ -56,7 +56,7 @@ class Client:
 
 
                 # info response : 사원 번호, 사원 이름, level, status
-                elif body['type'] == "info_response":
+                elif body['type'] == 300:
                     employee = json.loads(body['data'])
                     #print(employee)
 
@@ -64,16 +64,18 @@ class Client:
 
                     if result == True:
                         print("인증 성공")
+                        self.access_result(employee['eno'], self.dno, "success")
                     else:
                         print("인증 실패")
+                        self.access_result(employee['eno'], self.dno, "fail")
 
                 # remoteOpen : 원격 개방
-                elif body['type'] == 'remoteOpen':
+                elif body['type'] == 400:
                     # 도어락 여는 코드
                     door_open()
 
                 # Error 메시지
-                elif body['type'] == 'error':
+                elif body['type'] == 700:
                     data = body['data']
                     print(data)
                     
@@ -158,12 +160,19 @@ class Client:
     def shutdown(self):
         GPIO.cleanup()
         sys.exit()
+
+    # 출입시도 결과 보내기
+    def access_result(self, eno, dno, result):
+        log = {'eno':eno, 'dno':dno, 'result':result}
+        log_json = json.dumps(log)
+        message = {'type':350, 'data':log_json}
+        self.ws.send(json.dumps(message))
         
 
 # Mac Address 받아오기
 def get_mac():
     mac_num = hex(uuid.getnode()).replace('0x', '').upper()
-    mac = '-'.join(mac_num[i : i + 2] for i in range(0, 11, 2))
+    mac = ':'.join(mac_num[i : i + 2] for i in range(0, 11, 2))
     return mac
 
 # Doorlock Open

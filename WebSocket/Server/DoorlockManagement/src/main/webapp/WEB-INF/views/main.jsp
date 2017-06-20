@@ -165,7 +165,7 @@
 										<th class="col-xs-2 text-center">RemoteOpen</th>
 									</tr>
 								</thead>
-								<tbody class="col-xs-12">
+								<tbody id="rDoorlockList" class="col-xs-12">
 									<c:forEach var="i" begin="1" end="10" step="1">
 										<tr class="col-xs-12">
 											<td class="col-xs-4">AA:BB:CC:DD:CC:AA</td>
@@ -188,7 +188,6 @@
 							<div class="panel panel-default" style="margin:10px;">
 								<div class="panel-body">
 									<div id="rLogWindow" style="height:300px;overflow:scroll;">
-										<p>Test 로그입니다</p>
 									</div>
 								</div>
 							</div>
