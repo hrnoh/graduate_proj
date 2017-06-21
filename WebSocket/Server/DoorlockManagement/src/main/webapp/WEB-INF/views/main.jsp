@@ -58,7 +58,34 @@
 	             
 	        });
 		});
+		
+		$("#eAdd").on("click", function (evt) {
+			$.ajax({   
+	            type : "GET",
+	            url : "deptList",
+	            dataType : "json",
+	            error : function(){
+	                alert('통신실패!!');
+	            },
+	            success : function(msg){
+	            	var datas = "";
+	            	
+	            	for(var obj in msg) {
+	            		datas += "<option value='" + msg[obj]['dno'] + "'>"
+	            		datas += msg[obj]['deptName']
+	            		datas += "</option>"
+	            	}
+	            	
+	            	$("#department").html(datas);
+	            }
+	             
+	        });
+		});
 	});
+	
+	var msg = "${msg}";
+	if(msg == 'success')
+		alert('등록이 완료되었습니다.');
 </script>
 
 <!-- Menu -->

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.kpu.ng.domain.DepartmentVO;
 import org.kpu.ng.domain.EmployeeVO;
 import org.kpu.ng.persistence.EmployeeDAO;
 import org.springframework.stereotype.Service;
@@ -41,5 +42,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Override
 	public List<EmployeeVO> listAll() throws Exception {
 		return dao.listAll();
+	}
+	
+	@Override
+	public List<DepartmentVO> deptList() throws Exception {
+		return dao.deptList();
 	}
 }

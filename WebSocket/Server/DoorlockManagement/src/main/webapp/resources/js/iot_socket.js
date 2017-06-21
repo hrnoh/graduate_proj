@@ -4,7 +4,7 @@
 var sock = null;
 var message = {}
 var rmessage = {}
-var host = "ws://localhost:8080/doorlock-ws";
+var host = "ws://172.30.1.17:8080/doorlock-ws";
 
 $(document)
 		.ready(
@@ -77,9 +77,10 @@ $(document)
 								text += "<td class='col-xs-4'>"
 										+ doorlockList[i].location + "</td>";
 								text += "<td class='col-xs-2 text-center'>";
-								text += "<a href='http://" + doorlockList[i].ip
-										+ ":8080' target='_blank'>";
-								text += "<span class='glyphicon glyphicon-search'></span></a></td>";
+								//text += "<a href='http://" + doorlockList[i].ip + ":8080/stream' target='_blank'>";
+								text += "<a href='#'><span class='glyphicon glyphicon-search' ";
+								text += "onclick=\"window.open('http://" + doorlockList[i].ip + ":8080/stream', 'streaming', 'height=520, width=700, left=300, top=100'); \">"
+								text += "</span></a></td>";
 								text += "<td class='col-xs-2 text-center'>";
 								text += "<a href='#'>"
 								text += "<span class='glyphicon glyphicon-lock' onclick='remoteOpen(\""

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.kpu.ng.domain.DepartmentVO;
 import org.kpu.ng.domain.DoorlockVO;
 import org.kpu.ng.domain.EmployeeVO;
 import org.kpu.ng.domain.LogVO;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/web/*")
@@ -47,8 +49,32 @@ public class WebController {
 	}
 	
 	@RequestMapping(value = "/dAdd", method = RequestMethod.POST)
-	public void dAddPOST() {
+	public String dAddPOST(DoorlockVO doorlockVO, RedirectAttributes rttr) throws Exception {
 		
+		doorlockService.regist(doorlockVO);
+		rttr.addFlashAttribute("msg", "success");
+		
+		return "redirect:/web/";
+	}
+	//===========================================================================
+	
+	/*
+	 * 사원 추가 (URL : http://서버ip:8080/web/eAdd) =======================
+	 * */
+	@RequestMapping(value = "/deptList", method = RequestMethod.GET)
+	public @ResponseBody List<DepartmentVO> deptListGET() throws Exception {
+		List<DepartmentVO> deptList = employeeService.deptList();
+		
+		return deptList;
+	}
+	
+	@RequestMapping(value = "/eAdd", method = RequestMethod.POST)
+	public String eAddPOST(EmployeeVO employeeVO, RedirectAttributes rttr) throws Exception {
+		
+		employeeService.regist(employeeVO);
+		rttr.addFlashAttribute("msg", "success");
+		
+		return "redirect:/web/";
 	}
 	//===========================================================================
 	

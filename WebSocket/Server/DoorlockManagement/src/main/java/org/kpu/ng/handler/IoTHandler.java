@@ -249,7 +249,7 @@ public class IoTHandler extends TextWebSocketHandler {
 		
 		// 원격개방 시그널 전송
 		session = item.getSession();
-		msg = new MessageDTO(400, null);
+		msg = new MessageDTO(400, mac);
 		String msgJson = msg.toJson();
 		session.sendMessage(new TextMessage(msgJson));
 		

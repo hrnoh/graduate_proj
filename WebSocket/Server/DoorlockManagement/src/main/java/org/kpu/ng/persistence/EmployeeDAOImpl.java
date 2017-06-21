@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.ibatis.session.SqlSession;
+import org.kpu.ng.domain.DepartmentVO;
 import org.kpu.ng.domain.EmployeeVO;
 import org.springframework.stereotype.Repository;
 
@@ -43,5 +44,10 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	@Override
 	public List<EmployeeVO> listAll() throws Exception {
 		return session.selectList(namespace + ".listAll");
+	}
+	
+	@Override
+	public List<DepartmentVO> deptList() throws Exception {
+		return session.selectList(namespace + ".deptList");
 	}
 }

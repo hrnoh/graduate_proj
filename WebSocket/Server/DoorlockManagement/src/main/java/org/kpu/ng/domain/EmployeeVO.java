@@ -4,7 +4,7 @@ public class EmployeeVO {
 	private int eno;
 	private String name;
 	private int age;
-	private String PhoneNum;
+	private String phoneNum;
 	private String position;
 	private String status;
 	private Integer level;
@@ -36,10 +36,10 @@ public class EmployeeVO {
 		this.age = age;
 	}
 	public String getPhoneNum() {
-		return PhoneNum;
+		return phoneNum;
 	}
 	public void setPhoneNum(String phoneNum) {
-		PhoneNum = phoneNum;
+		this.phoneNum = phoneNum;
 	}
 	public String getPosition() {
 		return position;
@@ -68,7 +68,7 @@ public class EmployeeVO {
 	
 	@Override
 	public String toString() {
-		return "EmployeeVO [eno=" + eno + ", name=" + name + ", age=" + age + ", PhoneNum=" + PhoneNum + ", position="
+		return "EmployeeVO [eno=" + eno + ", name=" + name + ", age=" + age + ", PhoneNum=" + phoneNum + ", position="
 				+ position + ", status=" + status + ", dno=" + dno + ", deptName=" + deptName + ", level=" + level
 				+ "]";
 	}

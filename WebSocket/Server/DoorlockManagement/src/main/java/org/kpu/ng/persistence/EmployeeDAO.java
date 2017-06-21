@@ -2,6 +2,7 @@ package org.kpu.ng.persistence;
 
 import java.util.List;
 
+import org.kpu.ng.domain.DepartmentVO;
 import org.kpu.ng.domain.EmployeeVO;
 
 public interface EmployeeDAO {
@@ -16,4 +17,6 @@ public interface EmployeeDAO {
 	public void delete(Integer eno) throws Exception;
 	
 	public List<EmployeeVO> listAll() throws Exception;
+	
+	public List<DepartmentVO> deptList() throws Exception;
 }
