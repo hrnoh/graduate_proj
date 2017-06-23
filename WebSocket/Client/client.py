@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+from pathlib import Path
 import websocket
 import threading
 import json
@@ -6,6 +7,9 @@ import time
 import sys
 import uuid
 import datetime
+import face_recognition
+import picamera
+import numpy as np
 import RPi.GPIO as GPIO
 
 class Client:
@@ -55,7 +59,7 @@ class Client:
                 elif body['type'] == 300:
                     employee = json.loads(body['data'])
 
-                    result = self.certification(employee['level'])
+                    result = self.certification(employee['level'], employee['eno'])
 
                     if result == True:
                         print("인증 성공")
@@ -116,21 +120,12 @@ class Client:
         self.ws.send(msg_json)
 
     # 인증
-    def certification(self, level):
-        proc = rule[level]
-        result_set = proc
+    def certification(self, level, eno):
+        if self.card(level) != 1:
+            return False
 
-        if proc['card']:
-            result_set['card'] = self.card(level)
-
-        if proc['face']:
-            result_set['face'] = self.face(level)
-
-        proc_list = list(proc.values())
-        result_set_list = list(result_set.values())
-
-        for i in range(3):
-            if proc_list[i] != result_set_list[i]:
+        if self.level >= 2:
+            if self.face(eno) != 1:
                 return False
 
         return True
@@ -144,17 +139,64 @@ class Client:
             return 0
 
     # 얼굴 인증
-    def face(self, level):
-        #print('face 인증')
-        return 1
+    def face(self, eno):
+        output = np.empty((240, 320, 3), dtype=np.uint8)
+
+        print("Loading eno:1 face image")
+        img_name = str(eno) + ".jpg"
+
+        img_file = Path(img_name)
+        if img_file.is_file():
+            emp_image = face_recognition.load_image_file(img_name)
+            emp_face_location = face_recognition.face_locations(emp_image)
+            emp_face_encoding = face_recognition.face_encodings(emp_image, emp_face_location)[0]
+
+            # init variables
+            face_locations = []
+            face_encodings = []
+
+            try:
+                self.camera = picamera.PiCamera()
+                self.camera.resolution = (320, 240)
+            
+                print("Capturing image")
+                self.camera.capture(output, format="rgb")
+
+                self.camera.close()
+                self.camera = None
+            except:
+                print("현재 카메라 사용이 불가능합니다")
+                return 0
+
+            face_locations = face_recognition.face_locations(output)
+            print("Found {} faces in image.".format(len(face_locations)))
+            face_encodings = face_recognition.face_encodings(output, face_locations)
+
+            # Loop over each face found in the frame to see if it's someone we know.
+            for face_encoding in face_encodings:
+                # See if the face is a match for the known face(s)
+                match = face_recognition.compare_faces([emp_face_encoding], face_encoding)
+                distance = face_recognition.face_distance([emp_face_encoding], face_encoding)
+
+                print("distance :", distance[0])
+
+                if match[0]:
+                    return 1
+
+        else:
+            print("해당 사원의 사진이 존재하지 않습니다..")
+        return 0
 
     # Doorlock Open
     def door_open(self):
         if self.evt.isSet() == False:
             self.evt.set()
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setup(4, GPIO.OUT)
             GPIO.output(4, True)
             time.sleep(0.5)
             GPIO.output(4, False)
+            GPIO.cleanup()
             self.evt.clear()
         else:
             sys.exit()
@@ -176,15 +218,6 @@ def get_mac():
 
 if __name__ == "__main__":
     try:
-        # GPIO 활성화
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(4, GPIO.OUT)
-
-        # Rule 설정
-        rule = {1: {'card': 1, 'face': 0},
-                2: {'card': 1, 'face': 1},
-                3: {'card': 1, 'face': 1}}
-
         clnt = Client()
     finally:
         GPIO.cleanup()

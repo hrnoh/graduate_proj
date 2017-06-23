@@ -13,12 +13,14 @@
 		select deptName, position, name, location, result, time
 		from log_full
 		where eno = #{eno}
+		order by time
 	</select>
 	
 	<select id="listByDoorlock" resultType="LogVO">
 		select deptName, position, name, location, result, time
 		from log_full
 		where mac = #{mac}
+		order by time
 	</select>
 	
 	<select id="listAll" resultType="LogVO">
