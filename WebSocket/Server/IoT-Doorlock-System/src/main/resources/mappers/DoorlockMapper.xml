@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="org.kpu.doorlock.mapper.DoorlockMapper">
+	<select id="getInfoByMac" resultType="org.kpu.doorlock.domain.DoorlockVO">
+		select * from doorlock where mac = #{mac}
+	</select>
+	
+	<select id="getAllInfo" resultType="org.kpu.doorlock.domain.DoorlockVO">
+		select * from doorlock
+	</select>
+	
+	<insert id="insertDoorlock" parameterType="org.kpu.doorlock.domain.DoorlockVO">
+		insert into doorlock(mac, location, level) 
+		select #{mac}, #{location}, #{level} from dual
+		where not exists (select * from doorlock where mac=#{mac});
+	</insert>
+</mapper>

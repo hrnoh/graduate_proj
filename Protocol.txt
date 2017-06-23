@@ -1,0 +1,153 @@
+Protocol
+1. 메세지 종류 (G : GET, P : POST, D : DELETE, R : RealTime)
+rDInit : 도어락 초기화(R)
+rUInit : 웹 초기화(R)
+info : 출입시 사원정보 요청(R)
+dLog : 도어락 로그 정보(G)
+eLog : 사원 로그 정보(G)
+dAdd : 도어락 추가(P)
+eAdd : 사원 추가(P)
+dDel : 도어락 제거(D)
+eDel : 사원 제거(D)
+eList : 사원 목록(G)
+dList : 도어락 목록(G)
+rRemoteOpen : 원격 개방(R)
+rRefresh : 도어락 상태 리스트 갱신 (서버 -> 웹) (R)
+rLog : 실시간 로그 (R)
+
+2. 실시간 (IoTHandler, "/doorlock-ws")		(D: doorlock쪽, W: 웹쪽, A: 어플쪽)
+rDinit(D) - 100	(data : mac)			* message : (type, data)
+rUInit(W, A) - 200				type : 요청 번호
+info(D) - 300 (data : eno)			data : 요청 내용
+remoteOpen(D, W, A) - 400 (data : mac)
+dRefresh(W, A) - 500
+rLog(W, A) - 600
+error(W, A) - 700
+
+3. 웹 (WebController, "/web/")
+eLog, dLog, eAdd, dAdd, eDel, dDel, eList, dList
+
+4. 안드로이드 (AndroidController, "/app/")
+eLog, dLog, eAdd, dAdd, eDel, dDel, eList, dList
+
+=========================================================================================================================
+Android Controller 정리
+eLog (사원 로그)
+ - method : GET
+ - request : /app/eLog/eno (eno는 사원 번호)
+ - response : LogVO List
+ - example :
+request
+http://localhost:8080/app/eLog/1
+
+response
+[{"lno":0,"eno":0,"dno":0,"deptName":"연구개발팀","position":"사장","name":"노형래","location":"형래집","result":"success","time":1496901631000},{"lno":0,"eno":0,"dno":0,"deptName":"연구개발팀","position":"사장","name":"노형래","location":"형래집","result":"test_fail","time":1496906506000},{"lno":0,"eno":0,"dno":0,"deptName":"연구개발팀","position":"사장","name":"노형래","location":"형래집","result":"test_fail2","time":1496906545000}]
+=========================================================================================================================
+dLog (도어락 로그)
+ - method : GET
+ - request : /app/dLog/mac (mac은 도어락의 mac주소)
+ - response : LogVO List
+ - example :
+request
+http://localhost:8080/app/dLog/B4-74-9F-AF-72-ED
+
+response
+[{"lno":0,"eno":0,"dno":0,"deptName":"연구개발팀","position":"사장","name":"노형래","location":"형래집","result":"success","time":1496901631000},{"lno":0,"eno":0,"dno":0,"deptName":"연구개발팀","position":"부장","name":"김동겸","location":"형래집","result":"success","time":1496901631000},{"lno":0,"eno":0,"dno":0,"deptName":"연구개발팀","position":"사장","name":"노형래","location":"형래집","result":"test_fail","time":1496906506000},{"lno":0,"eno":0,"dno":0,"deptName":"연구개발팀","position":"사장","name":"노형래","location":"형래집","result":"test_fail2","time":1496906545000}]
+=========================================================================================================================
+dAdd (도어락 추가)
+ - method : POST
+ - request : /app/eAdd
+ - requestBody
+	{
+		"mac":"Mac 주소",
+		"location":"장소",
+		"level":도어락레벨
+	}
+ - response : success (String)
+ - example :
+request
+http://localhost:8080/app/dAdd
+Content Type : application/json
+내용
+{
+"mac":"testMac",
+"location":"testLocation",
+"level":2
+}
+
+response
+success
+=========================================================================================================================
+eAdd (사원 추가)
+ - method : POST
+ - request : /app/dAdd
+ - requestBody
+	{
+		"name":"사원이름",
+		"age":나이,
+		"phoneNum":"전화번호",
+		"position":"직급",
+		"level":레벨,
+		"dno":부서번호
+	}
+ - response : success (String)
+ - example :
+request
+http://localhost:8080/app/eAdd
+Content Type : application/json
+내용
+{
+"name":"testName",
+"age":100,
+"phoneNum":"010-0000-0000",
+"position":"대리",
+"level":2,
+"dno":1
+}
+
+response
+success
+=========================================================================================================================
+eDel (사원 제거)
+ - method : DELETE
+ - request : /app/eDel/eno (eno는 사원 번호)
+ - response : success (String)
+ - example :
+request
+http://localhost:8080/app/eDel/3
+
+response
+success
+=========================================================================================================================
+dDel (도어락 제거)
+ - method : DELETE
+ - request : /app/dDel/mac (mac은 도어락의 Mac주소)
+ - response : success(String)
+ - example :
+request
+http://localhost:8080/app/dDel/testMac
+
+response
+success
+=========================================================================================================================
+eList (사원 리스트)
+ - method : GET
+ - request : /app/eList
+ - response : EmployeeVO List
+ - example :
+request
+http://localhost:8080/app/eList
+
+response
+[{"eno":1,"name":"노형래","age":23,"position":"사장","status":"safe","dno":null,"deptName":"연구개발팀","level":3,"phoneNum":"010-8281-9331"},{"eno":2,"name":"김동겸","age":23,"position":"부장","status":"safe","dno":null,"deptName":"연구개발팀","level":3,"phoneNum":"010-0000-0000"}]
+=========================================================================================================================
+dList (도어락 리스트)
+ - method : GET
+ - request : /app/dList
+ - response : DoorlockVO List
+ - example :
+request
+http://localhost:8080/app/dList
+
+response
+[{"dno":1,"location":"형래집","mac":"B4-74-9F-AF-72-ED","level":1},{"dno":2,"location":"test-home","mac":"FF-FF-FF-FF-FF-FF","level":1},{"dno":3,"location":"test home2","mac":"AB-FF-FF-FF-FF-FF","level":1},{"dno":4,"location":"형래집 라즈베리","mac":"B8-27-EB-3A-11-C0","level":1},{"dno":5,"location":"edit-room","mac":"AB-CD-EF-GH-HI-JK","level":1},{"dno":6,"location":"test","mac":"90-9F-33-0C-87-D1","level":1}]

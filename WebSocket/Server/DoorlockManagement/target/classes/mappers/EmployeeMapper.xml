@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="org.kpu.ng.mapper.EmployeeMapper">	
+	<insert id="create">
+		insert into employee (name, age, phoneNum, position, level, dno)
+		values (#{name}, #{age}, #{phoneNum}, #{position}, #{level}, #{dno})
+	</insert>
+	
+	<select id="readByEno" resultType="EmployeeVO">
+		select *
+		from employee join department on employee.dno = department.dno
+		where employee.eno = #{eno}
+	</select>
+	
+	<select id="readByName" resultType="EmployeeVO">
+		select * 
+		from employee join department on employee.dno = department.dno
+		where employee.name = #{name}
+	</select>
+	
+	<!-- eno를 기준으로 수정(임시) -->
+	<update id="update">
+		update employee 
+		set name = #{name}, 
+		age = #{age}, 
+		phoneNum = #{phoneNum},
+		position = #{position},
+		level = #{level},
+		dno = #{dno},
+		status = #{status}
+		where eno = #{eno}
+	</update>
+	
+	<delete id="delete">
+		delete from employee
+		where eno = #{eno}
+	</delete>
+	
+	<select id="listAll" resultType="EmployeeVO">
+		select * from emp_full
+	</select>
+	
+	<select id="deptList" resultType="DepartmentVO">
+		select * from department;
+	</select>
+</mapper>
